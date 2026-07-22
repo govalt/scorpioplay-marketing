@@ -1171,7 +1171,7 @@ export function MarketingPage() {
               <div className="demoNotice">
                 <ShieldCheck size={18} />
                 <span>
-                  This page sends players to Scorpio Play's official game
+                  This page sends players to Scorpio Play&lsquo;s official game
                   catalog for the live API-powered demo.
                 </span>
               </div>
