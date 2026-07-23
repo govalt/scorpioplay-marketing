@@ -10,13 +10,17 @@ function clean(value: unknown, maxLength: number) {
 }
 
 function escapeHtml(value: string) {
-  return value.replace(/[&<>'"]/g, (character) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "'": "&#39;",
-    '"': "&quot;",
-  })[character] || character);
+  return value.replace(
+    /[&<>'"]/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;",
+      })[character] || character,
+  );
 }
 
 export async function POST(request: Request) {
@@ -29,8 +33,15 @@ export async function POST(request: Request) {
     const email = clean(body.email, 160).toLowerCase();
     const requirements = clean(body.requirements, 3000);
 
-    if (name.length < 2 || requirements.length < 10 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json({ error: "Please provide a valid name, email, and requirements." }, { status: 400 });
+    if (
+      name.length < 2 ||
+      requirements.length < 10 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
+      return NextResponse.json(
+        { error: "Please provide a valid name, email, and requirements." },
+        { status: 400 },
+      );
     }
 
     const host = process.env.SMTP_HOST;
@@ -40,8 +51,16 @@ export async function POST(request: Request) {
     const from = process.env.SMTP_FROM || user;
 
     if (!host || !user || !pass || !from) {
-      console.error("Contact form email is not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS, and SMTP_FROM.");
-      return NextResponse.json({ error: "Email delivery is temporarily unavailable. Please email us directly." }, { status: 503 });
+      console.error(
+        "Contact form email is not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS, and SMTP_FROM.",
+      );
+      return NextResponse.json(
+        {
+          error:
+            "Email delivery is temporarily unavailable. Please email us directly.",
+        },
+        { status: 503 },
+      );
     }
 
     const transporter = nodemailer.createTransport({
@@ -63,6 +82,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Unable to deliver API access request:", error);
-    return NextResponse.json({ error: "Unable to send your request. Please try again shortly." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Unable to send your request. Please try again shortly." },
+      { status: 500 },
+    );
   }
 }
